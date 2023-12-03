@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\Region;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\MarkdownEditor;
@@ -18,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Conference extends Model
 {
@@ -44,6 +44,11 @@ class Conference extends Model
     public function talks(): BelongsToMany
     {
         return $this->belongsToMany(Talk::class);
+    }
+
+    public function attendees(): HasMany
+    {
+        return $this->hasMany(Attendee::class);
     }
 
     public static function getForm(): array
@@ -100,12 +105,6 @@ class Conference extends Model
                             return $query->where('region', $get('region'));
                         }),
                 ]),
-            CheckboxList::make('speakers')
-                ->relationship('speakers', 'name')
-                ->options(
-                    Speaker::all()->pluck('name', 'id')
-                )
-                ->required(),
             Actions::make([
                 Action::make('star')
                     ->label('Fill with Factory Data')
